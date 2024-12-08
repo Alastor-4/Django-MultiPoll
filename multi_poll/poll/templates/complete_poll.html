@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>{{ poll.title }}</title>
+</head>
+<body>
+    <h1>{{ poll.title }}</h1>
+    <p>{{ poll.description }}</p>
+    <form method="post">
+        {% csrf_token %}
+        <label for="username">Username:</label>
+        <input type="text" id="username" name="username" required>
+        <br><br>
+        {% for question in poll.questions.all %}
+        <div>
+            <p>{{ question.text }}</p>
+            {% for option in question.options.all %}
+              <input type="radio" id="option-{{ option.id }}" name="question-{{ question.id }}" value="{{ option.id }}">
+              <label for="option-{{ option.id }}">{{ option.text }}</label>
+            {% endfor %}
+            <br>
+            <input type="checkbox" id="custom_answer-{{ question.id }}" onclick="toggleInput({{ question.id }})">
+            <label for="custom_answer-{{ question.id }}">Other</label>
+            <input type="text" name="custom_answer-{{ question.id }}" id="custom-answer-{{ question.id }}" style="display:none;">
+        </div>
+        {% endfor %}
+        <button type="submit">Send</button>
+    </form>
+
+    <script>
+        function toggleInput(questionId) {
+            const input = document.getElementById(`custom-answer-${questionId}`);
+            input.style.display = input.style.display === "none" ? "block" : "none";
+        }
+    </script>
+</body>
+</html>
