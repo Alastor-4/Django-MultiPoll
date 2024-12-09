@@ -5,6 +5,8 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-mf*($@!@)c#=2o%a$mx+z3b1d@mz&fpikv&#gs$2a^94l6-)xt'
 
 DEBUG = True
+import os
+os.environ["PATH"] += os.pathsep + "/home/a4god-/.nvm/versions/node/v22.12.0/bin"
 
 ALLOWED_HOSTS = []
 
@@ -15,7 +17,9 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'poll'
+    'poll',
+    'tailwind',
+    'theme',
 ]
 
 MIDDLEWARE = [
@@ -70,6 +74,8 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
+NPM_BIN_PATH = "/home/a4god-/.nvm/versions/node/v22.12.0/bin/npm"
+
 LANGUAGE_CODE = 'en-us'
 
 TIME_ZONE = 'UTC'
@@ -78,6 +84,10 @@ USE_I18N = True
 
 USE_TZ = True
 
+INTERNAL_IPS = ["127.0.0.1",]
+
 STATIC_URL = 'static/'
+
+TAILWIND_APP_NAME = 'theme'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
