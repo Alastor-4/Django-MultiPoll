@@ -17,9 +17,11 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+
     'poll',
     'tailwind',
     'theme',
+    'django_browser_reload',
 ]
 
 MIDDLEWARE = [
@@ -30,6 +32,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'django_browser_reload.middleware.BrowserReloadMiddleware',
 ]
 
 ROOT_URLCONF = 'multi_poll.urls'
@@ -74,7 +77,6 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-NPM_BIN_PATH = "/home/a4god-/.nvm/versions/node/v22.12.0/bin/npm"
 
 LANGUAGE_CODE = 'en-us'
 
@@ -84,10 +86,11 @@ USE_I18N = True
 
 USE_TZ = True
 
-INTERNAL_IPS = ["127.0.0.1",]
-
 STATIC_URL = 'static/'
 
-TAILWIND_APP_NAME = 'theme'
-
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+# Django Tailwind
+NPM_BIN_PATH = "/home/a4god-/.nvm/versions/node/v22.12.0/bin/npm"
+TAILWIND_APP_NAME = 'theme'
+INTERNAL_IPS = ["127.0.0.1",]

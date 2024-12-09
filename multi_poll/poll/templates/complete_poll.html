@@ -1,3 +1,4 @@
+{% load static tailwind_tags %}
 <!doctype html>
 <html lang="en">
 <head>
@@ -6,36 +7,70 @@
           content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>{{ poll.title }}</title>
-</head>
-<body>
-    <h1>{{ poll.title }}</h1>
-    <p>{{ poll.description }}</p>
-    <form method="post">
-        {% csrf_token %}
-        <label for="username">Username:</label>
-        <input type="text" id="username" name="username" required>
-        <br><br>
-        {% for question in poll.questions.all %}
-        <div>
-            <p>{{ question.text }}</p>
-            {% for option in question.options.all %}
-              <input type="radio" id="option-{{ option.id }}" name="question-{{ question.id }}" value="{{ option.id }}">
-              <label for="option-{{ option.id }}">{{ option.text }}</label>
-            {% endfor %}
-            <br>
-            <input type="checkbox" id="custom_answer-{{ question.id }}" onclick="toggleInput({{ question.id }})">
-            <label for="custom_answer-{{ question.id }}">Other</label>
-            <input type="text" name="custom_answer-{{ question.id }}" id="custom-answer-{{ question.id }}" style="display:none;">
-        </div>
-        {% endfor %}
-        <button type="submit">Send</button>
-    </form>
 
+    {% tailwind_css %}
     <script>
         function toggleInput(questionId) {
-            const input = document.getElementById(`custom-answer-${questionId}`);
-            input.style.display = input.style.display === "none" ? "block" : "none";
+            const input = document.getElementById(`custom_answer-${questionId}`);
+            const radiobtns = document.getElementsByName(`question-${questionId}`);
+            if (input.style.display === "none" || input.style.display === "") {
+                input.style.display = "block";
+                radiobtns.forEach(radio => radio.checked = false);
+            } else {
+                input.style.display = "none";
+            }
         }
     </script>
+</head>
+<body class="bg-gray-100">
+    <h1 class="text-2xl font-semibold text-center">{{ poll.title }}</h1>
+    <p class="text-center">{{ poll.description }}</p>
+
+    <form method="post" class="w-1/2 mx-auto p-4 bg-white shadow-md rounded-lg">
+        {% csrf_token %}
+
+        {% if not selected_options %}
+        <label for="username" class="block text-lg font-medium">Username:</label>
+        <input type="text" id="username" name="username" class="mt-2 p-2 w-full rounded-lg border border-gray-300" required>
+        {% else %}
+        <h3 class="text-xl">Edit your answers:</h3>
+        {% endif %}
+
+        <div class="mt-4">
+            {% for question in poll.questions.all %}
+            <div class="mb-4">
+                <p class="font-medium">{{ question.text }}</p>
+                {% if question.image %}
+                <div class="my-2">
+                    <img src="{{ question.image.url }}" class="max-w-xs mx-auto rounded cursor-pointer" onclick="window.open('{{ question.image.url }}', '_blank')" />
+                </div>
+                {% endif %}
+                {% for option in question.options.all %}
+                <div class="flex items-center">
+                    <input type="radio" id="option-{{ option.id }}" name="question-{{ question.id }}" value="{{ option.id }}" class="mr-2"
+                    >
+                    <label for="option-{{ option.id }}" class="text-lg">{{ option.text }}</label>
+                </div>
+                {% endfor %}
+
+                <div class="flex items-center mt-2">
+                    <input type="radio" id="custom_answer-{{ question.id }}" name="question-{{ question.id }}" value="custom" class="mr-2"
+                    onclick="toggleInput({{ question.id }})" >
+                    <label for="custom_answer-{{ question.id }}" class="text-lg">Other</label>
+                    <input type="text" id="custom_answer_input-{{ question.id }}" name="custom_answer-{{ question.id }}" class="ml-2 p-2 w-full rounded-lg border border-gray-300"
+                    >
+                </div>
+                <div class="mt-4">
+                    <button type="submit" class="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-700">Submit</button>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </form>
+    <div class="progress mt-4">
+        <div class="bg-gray-300 rounded-full h-2">
+            <div class="bg-blue-500 h-2 rounded-full" style="width: {{ progress }}%"></div>
+        </div>
+    </div>
 </body>
 </html>
