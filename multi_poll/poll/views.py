@@ -1,7 +1,7 @@
 from django.shortcuts import render, get_object_or_404, redirect
 from django.http import HttpResponse
-from pipenv.core import console
-from .models import Poll, Answer, Option, SelectedOption
+from .models import Poll, Answer, Option, SelectedOption, CustomAnswer
+from django.contrib.auth.models import User
 import pandas as pd
 
 def poll_list(request):
@@ -10,22 +10,43 @@ def poll_list(request):
 
 def complete_poll(request, poll_id):
     poll = get_object_or_404(Poll, id=poll_id)
+    username = request.POST.get('username') if request.method == 'POST' else None
+    existing_answer = None
+    selected_options = None
+    custom_answers = None
+
+    if username:
+       existing_answer = Answer.objects.filter(poll=poll, username=username).first()
+
+    if existing_answer:
+        selected_options = existing_answer.selected_options.all()
+        custom_answers = existing_answer.custom_answers.all()
+
     if request.method == 'POST':
-        username = request.POST.get('username')
-        answer = Answer.objects.create(poll=poll, username=username)
+        if not existing_answer:
+            answer = Answer.objects.create(poll=poll, username=username)
+        else:
+            answer = existing_answer
 
         for question in poll.questions.all():
             option_id = request.POST.get(f'question-{question.id}')
-            custom_answer = request.POST.get(f'custom_answer-{question.id}')
+            custom_answer = request.POST.get(f'custom_answer_input-{question.id}')
 
             if option_id:
                 option = Option.objects.get(id=option_id)
                 SelectedOption.objects.create(answer=answer, question=question, option=option)
             elif custom_answer:
-                SelectedOption.objects.create(answer=answer, question=question, custom_answer=custom_answer)
+                SelectedOption.objects.filter(answer=answer, question=question).delete()
+                CustomAnswer.objects.update_or_create(answer=answer, question=question, custom_answer=custom_answer)
 
         return redirect('/')
-    return render(request, 'complete_poll.html', {'poll' : poll})
+    return render(request, 'complete_poll.html', {
+        'poll': poll,
+        'selected_options': selected_options,
+        'custom_answers': custom_answers,
+        'total_questions': poll.questions.count(),
+        'progress': 0
+    })
 
 def export_results(request, poll_id):
     poll = get_object_or_404(Poll, id=poll_id)
