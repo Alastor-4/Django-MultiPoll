@@ -1,31 +1,73 @@
+from audioop import reverse
+
 from django.db import models
+from django.contrib import admin
+from django.utils.html import mark_safe
 
 class Poll(models.Model):
-    title = models.CharField(max_length=255)
-    description = models.TextField()
-    image = models.ImageField(upload_to='images/poll/', null=True, blank=True)
+    title = models.CharField(max_length=120)
+    description = models.TextField(max_length=255)
+    publish_date = models.DateTimeField(auto_now_add=True)
+    is_active = models.BooleanField(default=True)
+    image = models.ImageField(upload_to='images/poll/', help_text="Upload an Image to be the part of the Header", null=True, blank=True)
+
+    class Meta:
+        verbose_name_plural = "Poll"
+
+    @admin.display(description="Image Preview")
+    def image_preview(self):
+        return mark_safe(f'<img src="{self.image.url}" alt="" style="object-fit: cover;" height="100" width="100" />' if self.image else f'<p>No Image</p>')
+
+    @admin.display(description="Image")
+    def image_list_preview(self):
+        return mark_safe(f'<img src="{self.image.url}" alt="" width="60" height="60" style="border: 1px solid #000; border-radius:25%;" />' if self.image else f'<p>No Image</p>')
 
     def __str__(self):
         return self.title
 
+
 class Question(models.Model):
     poll = models.ForeignKey(Poll, related_name="questions", on_delete=models.CASCADE)
-    text = models.CharField(max_length=255)
-    image = models.ImageField(upload_to='images/question/', null=True, blank=True)
+    text = models.CharField(max_length=120)
+    image = models.ImageField(upload_to='images/question/', help_text="Upload an Image to better explain the question", null=True, blank=True)
 
     def __str__(self):
         return f'{self.poll.title} - Q{self.id} - {self.text}'
 
+    @admin.display(description="Image Preview")
+    def image_preview(self):
+        return mark_safe(
+            f'<img src="{self.image.url}" alt="" style="object-fit: cover;" height="100" width="100" />' if self.image else f'<p>No Image</p>')
+
+    @admin.display(description="Image")
+    def image_list_preview(self):
+        return mark_safe(
+            f'<img src="{self.image.url}" alt="" width="60" height="60" style="border: 1px solid #000; border-radius:25%;" />' if self.image else f'<p>No Image</p>')
+
+    class Meta:
+        verbose_name_plural = "Questions"
+
 class Option(models.Model):
     question = models.ForeignKey(Question, related_name="options", on_delete=models.CASCADE)
     text = models.CharField(max_length=100)
-    image = models.ImageField(upload_to='images/option/', null=True, blank=True)
+    image = models.ImageField(upload_to='images/option/', help_text="Upload an Image to better explain the option", null=True, blank=True)
+
+    class Meta:
+        verbose_name_plural = "Options"
+
+    @admin.display(description="Image Preview")
+    def image_preview(self):
+        return mark_safe(f'<img src="{self.image.url}" alt="" style="object-fit: cover;" height="60" width="60" />' if self.image else f'<p>No Image</p>',)
+
+    @admin.display(description="Image")
+    def image_list_preview(self):
+        return mark_safe(f'<img src="{self.image.url}" alt="" width="60" height="60" style="border: 1px solid #000; border-radius:25%;" />' if self.image else f'<p>No Image</p>')
 
     def __str__(self):
-        return self.text
+        return f'{self.question.text} - O{self.id} - {self.text}'
 
 class Answer(models.Model):
-    poll = models.ForeignKey(Poll, related_name='answer', on_delete=models.CASCADE)
+    poll = models.ForeignKey(Poll, related_name='answers', on_delete=models.CASCADE)
     username = models.CharField(max_length=40)
     submitted_at = models.DateTimeField(auto_now_add=True)
 
