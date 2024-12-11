@@ -1,11 +1,10 @@
 from django.shortcuts import render, get_object_or_404, redirect
 from django.http import HttpResponse
 from .models import Poll, Answer, Option, SelectedOption, CustomAnswer
-from django.contrib.auth.models import User
 import pandas as pd
 
 def poll_list(request):
-    poll = Poll.objects.all()
+    poll = Poll.objects.filter(is_active=True)
     return render(request, 'poll_list.html', {'poll_list' : poll})
 
 def complete_poll(request, poll_id):
@@ -54,21 +53,28 @@ def export_results(request, poll_id):
     data = []
     for result in results:
         row = {"Username" : result.username}
-        print(result.custom_answers.all())
-        print(result.selected_options.all())
         for question in poll.questions.all():
             selected_option = result.selected_options.filter(question=question).first()
             custom_answer = result.custom_answers.filter(question=question).first()
 
-
-            row[question.text] = (selected_option.option.text if selected_option else custom_answer.custom_answer if custom_answer else 'No answer')
+            row[question.text] = (selected_option.option.text if selected_option else custom_answer.custom_answer)
 
         data.append(row)
 
-    # df = pd.DataFrame(data, columns=['Name'] + [question.text for question in poll.questions.all()])
     df = pd.DataFrame(data)
     response = HttpResponse(content_type='application/vnd.ms-excel')
-    # response = HttpResponse(content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
-    response['Content-Disposition'] = f'attachment; filename={poll.title}_results.xlsx'
+    response['Content-Disposition'] = f'attachment; filename={poll.title}-results.xlsx'
     df.to_excel(response, index=False)
     return response
+
+def toggle_poll(request, poll_id):
+    pass
+
+def delete_poll(request, poll_id):
+    pass
+
+def delete_question(request, question_id):
+    pass
+
+def delete_option(request, poll_id):
+    pass
