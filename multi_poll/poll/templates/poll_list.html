@@ -11,6 +11,7 @@
 </head>
 <body>
     <h1>Available poll</h1>
+    <a href="/admin">Go to admin</a>
     <ul>
         {% for poll in poll_list %}
         <li><a href="{% url 'complete_poll' poll.id %}">{{poll.title}}</a></li>
