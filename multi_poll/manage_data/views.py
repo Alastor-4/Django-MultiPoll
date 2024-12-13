@@ -4,8 +4,12 @@ from .models import Poll, Answer, Option, SelectedOption, CustomAnswer
 import pandas as pd
 
 def poll_list(request):
-    poll = Poll.objects.filter(is_active=True)
-    return render(request, 'poll_list.html', {'poll_list' : poll})
+    poll = Poll.objects.filter(
+        is_active=True,
+        questions__isnull=False,
+        questions__options__isnull=False
+    ).distinct()
+    return render(request, 'poll_list.html', {'poll_list': poll})
 
 def complete_poll(request, poll_id):
     poll = get_object_or_404(Poll, id=poll_id)
