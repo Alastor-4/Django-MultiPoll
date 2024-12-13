@@ -1,8 +1,7 @@
-from audioop import reverse
-
 from django.db import models
 from django.contrib import admin
 from django.utils.html import mark_safe
+import os
 
 class Poll(models.Model):
     title = models.CharField(max_length=120)
@@ -13,6 +12,20 @@ class Poll(models.Model):
 
     class Meta:
         verbose_name_plural = "Poll"
+
+    def delete(self, *args, **kwargs):
+        if self.image:
+            if os.path.isfile(self.imgage.path):
+                os.remove(self.image.path)
+        super().delete(*args, **kwargs)
+
+    def save(self, *args, **kwargs):
+        if self.id:
+            last_instance = Poll.objects.get(id=self.id)
+            if last_instance.image and last_instance.image != self.image:
+                if os.path.isfile(last_instance.image.path):
+                    os.remove(last_instance.image.path)
+        super().save(*args, **kwargs)
 
     @admin.display(description="Image Preview")
     def image_preview(self):
@@ -34,6 +47,20 @@ class Question(models.Model):
     def __str__(self):
         return f'{self.poll.title} - Q{self.id} - {self.text}'
 
+    def delete(self, *args, **kwargs):
+        if self.image:
+            if os.path.isfile(self.image.path):
+                os.remove(self.image.path)
+        super().delete(*args, **kwargs)
+
+    def save(self, *args, **kwargs):
+        if self.id:
+            last_instance = Question.objects.get(id=self.id)
+            if last_instance.image and last_instance.image != self.image:
+                if os.path.isfile(last_instance.image.path):
+                    os.remove(last_instance.image.path)
+        super().save(*args, **kwargs)
+
     @admin.display(description="Image Preview")
     def image_preview(self):
         return mark_safe(
@@ -54,6 +81,20 @@ class Option(models.Model):
 
     class Meta:
         verbose_name_plural = "Options"
+
+    def delete(self, *args, **kwargs):
+        if self.image:
+            if os.path.isfile(self.imgage.path):
+                os.remove(self.image.path)
+        super().delete(*args, **kwargs)
+
+    def save(self, *args, **kwargs):
+        if self.id:
+            last_instance = Option.objects.get(id=self.id)
+            if last_instance.image and last_instance.image != self.image:
+                if os.path.isfile(last_instance.image.path):
+                    os.remove(last_instance.image.path)
+        super().save(*args, **kwargs)
 
     @admin.display(description="Image Preview")
     def image_preview(self):

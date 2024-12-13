@@ -1,8 +1,5 @@
 from pathlib import Path
 from django.templatetags.static import static
-from django.urls import reverse_lazy
-from django.utils.translation import gettext_lazy as _
-
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 SECRET_KEY = 'django-insecure-mf*($@!@)c#=2o%a$mx+z3b1d@mz&fpikv&#gs$2a^94l6-)xt'
@@ -22,7 +19,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
 
-    'poll',
+    'manage_data',
     'tailwind',
     'theme',
     'django_browser_reload',
@@ -44,7 +41,7 @@ ROOT_URLCONF = 'multi_poll.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [BASE_DIR, "/templates"],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -109,14 +106,8 @@ INTERNAL_IPS = ["127.0.0.1",]
 UNFOLD = {
     "SITE_TITLE": "MultiPoll WebSite",
     "SITE_HEADER": "Unfold - MultiPoll WebSite",
-    "SITE_ICON": {
-        "light": lambda request: static("logo/test.svg"),
-        "dark": lambda request: static("logo/test.svg"),
-    },
-    "SITE_LOGO": {
-        "light": lambda request: static("logo/test.svg"),
-        "dark": lambda request: static("logo/test.svg"),
-    },
+    "SITE_ICON": lambda request: static("logo/test.svg"),
+    "SITE_LOGO": lambda request: static("logo/test.svg"),
     "SITE_FAVICONS": [
         {
             "rel": "icon",
@@ -125,8 +116,7 @@ UNFOLD = {
             "href": lambda request: static("logo/test.svg"),
         },
     ],
-    # "SHOW_HISTORY": False,
-    # "SHOW_VIEW_ON_SITE": True,
+    "THEME": "dark",
     "COLORS": {
         "font": {
             "subtle-light": "107 114 128",
