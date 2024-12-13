@@ -1,0 +1,123 @@
+{% extends "base.html" %}
+{% load static tailwind_tags %}
+
+{% block title %}{{ poll.title }}{% endblock %}
+
+{% block content %}
+<div class="h-max">
+    <div class="container mx-auto py-10 text-center">
+        <h1 class="text-3xl font-bold text-violet-600">{{ poll.title }}</h1>
+        <p class="text-lg text-gray-200 mt-2">{{ poll.description }}</p>
+    </div>
+
+    <form method="post" id="pollForm" class="mx-5 md:mx-auto bg-gray-200 shadow-md rounded-lg pt-6 pb-2 px-6 max-w-xl">
+        {% csrf_token %}
+
+        {% if not selected_options %}
+        <div class="mb-5" id="usernameSection">
+            <label for="username" class="block text-lg font-medium text-gray-800">Username:</label>
+            <input type="text" id="username" name="username"
+                class="mt-2 w-full text-gray-800 p-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-violet-500"
+                required>
+            <div class="text-center mt-6">
+                <button type="button" id="startPollButton" class="px-6 py-3 bg-violet-600 text-white font-medium rounded-lg shadow-lg
+                    hover:bg-violet-500 hover:shadow-xl transition">Start Poll</button>
+            </div>
+        </div>
+        {% else %}
+        <div id="questionSection" class="mb-6">
+            <h3 class="text-xl font-medium text-gray-800">Answer the questions:</h3>
+            {% for question in poll.questions.all %}
+            <div class="question-item hidden" id="question-{{ question.id }}">
+                <p class="font-medium text-lg text-gray-900">{{ question.text }}</p>
+
+                {% if question.image %}
+                <div class="my-4">
+                    <img src="{{ question.image.url }}" class="max-w-full mx-auto rounded-lg shadow-md cursor-pointer"
+                        onclick="window.open('{{ question.image.url }}', '_blank')" />
+                </div>
+                {% endif %}
+
+                {% for option in question.options.all %}
+                <div class="flex items-center mb-2">
+                    <input type="radio" id="option-{{ option.id }}" name="question-{{ question.id }}"
+                        value="{{ option.id }}" class="mr-3 focus:ring-violet-500 option-radio">
+                    <label for="option-{{ option.id }}" class="text-gray-800">{{ option.text }}</label>
+                </div>
+                {% endfor %}
+
+                <div class="flex items-center mt-4">
+                    <input type="radio" id="custom_answer-{{ question.id }}" name="question-{{ question.id }}"
+                        value="custom" class="mr-3 focus:ring-violet-500" onclick="toggleInput({{ question.id }})">
+                    <label for="custom_answer-{{ question.id }}" class="text-gray-800">Other</label>
+                </div>
+                <input type="text" id="custom_answer_input-{{ question.id }}" name="custom_answer-{{ question.id }}"
+                    class="mt-2 p-3 w-full rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-violet-500"
+                    style="display: none;">
+
+                <div class="text-center mt-6">
+                    <button type="button" class="px-6 py-3 bg-violet-600 text-white font-medium rounded-lg shadow-lg
+                        hover:bg-violet-500 hover:shadow-xl transition next-question" data-next="{{ forloop.counter0|add:1 }}">Next</button>
+                </div>
+            </div>
+            {% endfor %}
+
+            <div class="text-center mt-6 hidden" id="submitSection">
+                <button type="submit" class="px-6 py-3 bg-violet-600 text-white font-medium rounded-lg shadow-lg
+                    hover:bg-violet-500 hover:shadow-xl transition">Submit</button>
+            </div>
+        </div>
+        {% endif %}
+    </form>
+
+    <!-- Barra de progreso -->
+    <div class="container mx-auto mt-8 max-w-2xl">
+        <div class="bg-gray-300 rounded-full h-2">
+            <div class="bg-violet-600 h-2 rounded-full" style="width: {{ progress }}%"></div>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const startPollButton = document.getElementById('startPollButton');
+        const usernameSection = document.getElementById('usernameSection');
+        const questionSections = document.querySelectorAll('.question-item');
+        const submitSection = document.getElementById('submitSection');
+
+        if (startPollButton) {
+            startPollButton.addEventListener('click', function () {
+                usernameSection.style.display = 'none';
+                questionSections[0].classList.remove('hidden');
+                console.log("Algo")
+            });
+        }
+
+        const nextButtons = document.querySelectorAll('.next-question');
+        nextButtons.forEach((button, index) => {
+            button.addEventListener('click', function () {
+                questionSections[index].classList.add('hidden');
+                if (index + 1 < questionSections.length) {
+                    questionSections[index + 1].classList.remove('hidden');
+                } else {
+                    submitSection.classList.remove('hidden');
+                }
+            });
+        });
+    });
+
+    function toggleInput(questionId) {
+        const input = document.getElementById(`custom_answer_input-${questionId}`);
+        const radiobtns = document.getElementsByName(`question-${questionId}`);
+        if (input.style.display === "none" || input.style.display === "") {
+            input.style.display = "block";
+            input.required = true;
+            radiobtns.forEach(radio => radio.checked = false);
+        } else {
+            input.style.display = "none";
+            input.required = false;
+            input.value = "";
+        }
+    }
+</script>
+{% endblock %}

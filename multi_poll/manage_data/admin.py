@@ -3,19 +3,32 @@ from django.contrib import admin
 from django.utils.html import format_html
 from .models import Poll, Question, Option
 from unfold.admin import ModelAdmin
+from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
+from django.contrib.auth.admin import GroupAdmin as BaseGroupAdmin
+from django.contrib.auth.models import User, Group
 
-# admin.site.site_header = 'MultiPoll Website'
-# admin.site.site_title = 'MultiPoll Admin Site'
+admin.site.unregister(User)
+admin.site.unregister(Group)
+
+
+@admin.register(User)
+class UserAdmin(BaseUserAdmin, ModelAdmin):
+    pass
+
+@admin.register(Group)
+class GroupAdmin(BaseGroupAdmin, ModelAdmin):
+    pass
 
 @admin.register(Poll)
 class PollAdmin(ModelAdmin):
     list_display = ("title", "description", "publish_date", "image_preview", "total_answers", "is_active", "toggle_active", "export_button", "delete_button")
     list_display_links = ("title",)
+    fields = ("title", "description", "image", "is_active",)
     search_fields = ("title", "description")
-    readonly_fields = ("image_preview",)
     ordering = ("publish_date",)
     list_per_page = 5
     actions = None
+
 
     @admin.display(description="Total Answers")
     def total_answers(self, obj):
