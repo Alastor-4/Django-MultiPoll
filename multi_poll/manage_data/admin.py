@@ -36,7 +36,7 @@ class PollAdmin(ModelAdmin):
 
     def export_button(self, obj):
         return format_html(
-            '<a class="button" href="{}">Export Results</a>',
+            '<a class="button" style="background-color: green; padding: 1px 2px; text-color: white; border: rounded;" href="{}">Export Results</a>',
             reverse("export_results", args=[obj.id])
         )
     export_button.short_description = "Export Results"
