@@ -5,8 +5,8 @@ urlpatterns = [
     path('', poll_list, name='poll_list'),
     path('data/<int:poll_id>/', complete_poll, name='complete_poll'),
     path('data/<int:poll_id>/results', export_results, name='export_results'),
-    path('data/<int:poll_id>/delete', delete_poll, name='delete_poll'),
+    path('data/<int:poll_id>/poll_delete', delete_poll, name='delete_poll'),
     path('data/<int:poll_id>/toggle_poll', toggle_poll, name='toggle_poll'),
-    path('data/<int:question_id>/delete', delete_question, name='delete_question'),
-    path('data/<int:option_id>/delete', delete_option, name='delete_option'),
+    path('data/<int:question_id>/question_delete', delete_question, name='delete_question'),
+    path('data/<int:option_id>/option_delete', delete_option, name='delete_option'),
 ]

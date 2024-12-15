@@ -15,7 +15,7 @@ class Poll(models.Model):
 
     def delete(self, *args, **kwargs):
         if self.image:
-            if os.path.isfile(self.imgage.path):
+            if os.path.isfile(self.image.path):
                 os.remove(self.image.path)
         super().delete(*args, **kwargs)
 
@@ -36,7 +36,7 @@ class Poll(models.Model):
         return mark_safe(f'<img src="{self.image.url}" alt="" width="60" height="60" style="border: 1px solid #000; border-radius:25%;" />' if self.image else f'<p>No Image</p>')
 
     def __str__(self):
-        return self.title
+        return f'P-{self.title}'
 
 
 class Question(models.Model):
@@ -45,7 +45,7 @@ class Question(models.Model):
     image = models.ImageField(upload_to='images/question/', help_text="Upload an Image to better explain the question", null=True, blank=True)
 
     def __str__(self):
-        return f'{self.poll.title} - Q{self.id} - {self.text}'
+        return f'P-{self.poll.title} - Q-{self.text}'
 
     def delete(self, *args, **kwargs):
         if self.image:
@@ -84,7 +84,7 @@ class Option(models.Model):
 
     def delete(self, *args, **kwargs):
         if self.image:
-            if os.path.isfile(self.imgage.path):
+            if os.path.isfile(self.image.path):
                 os.remove(self.image.path)
         super().delete(*args, **kwargs)
 
@@ -105,11 +105,11 @@ class Option(models.Model):
         return mark_safe(f'<img src="{self.image.url}" alt="" width="60" height="60" style="border: 1px solid #000; border-radius:25%;" />' if self.image else f'<p>No Image</p>')
 
     def __str__(self):
-        return f'{self.question.text} - O{self.id} - {self.text}'
+        return f'Q-{self.question.text} - O-{self.text}'
 
 class Answer(models.Model):
     poll = models.ForeignKey(Poll, related_name='answers', on_delete=models.CASCADE)
-    username = models.CharField(max_length=40)
+    username = models.CharField(max_length=40, unique=True)
     submitted_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):

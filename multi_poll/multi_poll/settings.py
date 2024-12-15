@@ -106,14 +106,14 @@ INTERNAL_IPS = ["127.0.0.1",]
 UNFOLD = {
     "SITE_TITLE": "MultiPoll WebSite",
     "SITE_HEADER": "Unfold - MultiPoll WebSite",
-    "SITE_ICON": lambda request: static("logo/test.svg"),
-    "SITE_LOGO": lambda request: static("logo/test.svg"),
+    "SITE_ICON": lambda request: static("logo/logo.png"),
+    "SITE_LOGO": lambda request: static("logo/logo.png"),
     "SITE_FAVICONS": [
         {
             "rel": "icon",
             "sizes": "32x32",
             "type": "image/svg+xml",
-            "href": lambda request: static("logo/test.svg"),
+            "href": lambda request: static("logo/logo.png"),
         },
     ],
     "THEME": "dark",
