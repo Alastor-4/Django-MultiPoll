@@ -36,21 +36,21 @@ class PollAdmin(ModelAdmin):
 
     def export_button(self, obj):
         return format_html(
-            '<a class="button" style="background-color: green; padding: 1px 2px; text-color: white; border: rounded;" href="{}">Export Results</a>',
+            '<a class="button" style="background-color: green; padding: 4px 6px; border-radius: 5px; color: white; font-weight: 600;" href="{}">Export Results</a>',
             reverse("export_results", args=[obj.id])
         )
     export_button.short_description = "Export Results"
 
     def delete_button(self, obj):
         return format_html(
-            '<a class="button" style="background-color: red;" href="{}">Delete Poll</a>',
+            '<a class="button" style="background-color: red; padding: 4px 6px; border-radius: 5px; color: white; font-weight: 600;" href="{}">Delete Poll</a>',
             reverse("delete_poll", args=[obj.id])
         )
     delete_button.short_description = "Delete Poll"
 
     def toggle_active(self, obj):
         return format_html(
-            '<a class="button" style="background-color: yellow;" href="{}">Toggle Active</a>',
+            '<a class="button" style="background-color: purple; padding: 4px 6px; border-radius: 5px; color: white; font-weight: 600;" href="{}">Toggle Active</a>',
             reverse("toggle_poll", args=[obj.id])
         )
 
