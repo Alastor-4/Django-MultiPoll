@@ -8,7 +8,7 @@ DEBUG = True
 import os
 os.environ["PATH"] += os.pathsep + "/home/a4god-/.nvm/versions/node/v22.12.0/bin"
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['https://a4god.pythonanywhere.com/']
 
 INSTALLED_APPS = [
     'unfold',
